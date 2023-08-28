@@ -1,0 +1,1 @@
+export const CROSS = require('../Images/cross.png')

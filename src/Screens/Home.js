@@ -85,6 +85,7 @@ const Home = props => {
           onRequestClose={() => setVisible(false)}
           selectedBusinessId={selectedBussiness?.BusinessId}
           onpresscreatekb={() => {
+            setVisible(false)
             props.navigation.navigate('NewKhata');
           }}
         />
@@ -92,7 +93,7 @@ const Home = props => {
       <View style={styles.subView}>
         <View>
           <TouchableOpacity
-            style={{flexDirection: 'row'}}
+            style={{flexDirection: 'row', paddingTop: 12}}
             onPress={() => {
               setVisible(true);
             }}>

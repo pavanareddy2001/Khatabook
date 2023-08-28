@@ -11,6 +11,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {openDatabase} from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CROSS } from '../Images';
 
 
 
@@ -78,9 +79,21 @@ const BussinessListModal = (props) => {
         <View
           style={{
             width: '100%',
+            minHeight: '20%',
             maxHeight: '50%',
             backgroundColor: 'white',
+            borderTopEndRadius: 12,
+            borderTopLeftRadius: 12,
           }}>
+         <View style={{flexDirection:'row', alignItems: 'center', justifyContent: 'space-between', margin: 16}}>
+            <Text style={styles.heading}>Business List</Text>
+            <TouchableOpacity onPress={onRequestClose}>
+              <Image style={{height: 40, width: 40, tintColor: 'black'}}  source={CROSS} />
+            </TouchableOpacity>
+         </View>
+          {bussinessNameData?.length === 0 && 
+            <Text style={styles.notFound}>No Business Added</Text>
+          }
           <FlatList
             data={bussinessNameData}
             renderItem={({item}) => {
@@ -103,7 +116,7 @@ const BussinessListModal = (props) => {
                         />:null}
                         
                       </View>
-                      <Text>{item?.customerNo || '0 customer'}</Text>
+                      <Text>{item?.customerNo || '0 customers'}</Text>
                     </View>
                   </TouchableOpacity>
                 </ScrollView>
@@ -129,7 +142,7 @@ const styles = StyleSheet.create({
   bussinessNameView: {
     borderWidth: 0.5,
     margin: 10,
-    padding: 20,
+    padding: 12,
     borderRadius: 5,
   },
   nameView: {
@@ -140,17 +153,23 @@ const styles = StyleSheet.create({
   bussinessNameText: {
     fontSize: 18,
     color: 'black',
+    marginBottom: 6
   },
   createKBB: {
-    width: '80%',
+    width: '90%',
     margin: 10,
     padding: 10,
+    paddingVertical: 16,
     alignItems: 'center',
     alignSelf: 'center',
     backgroundColor: 'blue',
+    marginBottom: 20,
+    borderRadius: 8
   },
   createKBBText: {
     color: 'white',
+    fontWeight: '600',
+    fontSize: 14
   },
   topBlankView: {
     position: 'absolute',
@@ -163,4 +182,16 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  notFound: {
+    fontSize: 15,
+    color: "black",
+    width: '100%',
+    textAlign: 'center',
+    marginVertical: 16
+  },
+  heading: {
+    fontSize: 18,
+    color: "black",
+    fontWeight: '700'
+  }
 });
