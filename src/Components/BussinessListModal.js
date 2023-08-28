@@ -116,7 +116,7 @@ const BussinessListModal = (props) => {
                         />:null}
                         
                       </View>
-                      <Text>{item?.customerNo || '0 customers'}</Text>
+                      <Text style={styles.noOfCus}>{item?.customerNo || '0 customers'}</Text>
                     </View>
                   </TouchableOpacity>
                 </ScrollView>
@@ -151,9 +151,10 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   bussinessNameText: {
-    fontSize: 18,
+    fontSize: 15,
     color: 'black',
-    marginBottom: 6
+    marginBottom: 6,
+    fontWeight: '600'
   },
   createKBB: {
     width: '90%',
@@ -181,6 +182,11 @@ const styles = StyleSheet.create({
   selectedImg: {
     width: 20,
     height: 20,
+  },
+  noOfCus: {
+    fontSize: 12,
+    color: "gray",
+    fontWeight: '500'
   },
   notFound: {
     fontSize: 15,
