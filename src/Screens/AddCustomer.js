@@ -12,7 +12,7 @@ import CustomHeader from "../Components/CustomHeader";
 import { openDatabase } from "react-native-sqlite-storage";
 import GenericButton from "../Components/GenericButton";
 import { useSelector } from "react-redux";
-import { getOnlyNumbers } from "../utils";
+import { getOnlyNumbers, showToast } from "../utils";
 
 var db = openDatabase({ name: "UserDatabase.db" });
 const AddCustomer = (props) => {
@@ -137,7 +137,7 @@ const AddCustomer = (props) => {
       return;
     }
     insertIntoCustomer(() => {
-      Alert.alert("Customer added");
+     showToast({mainText:"Customer added Successfully"})
       getCustomerData();
       setCustomerDetails({
         CustomerName: "",

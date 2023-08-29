@@ -133,9 +133,9 @@ const Home = (props) => {
             <Text style={styles.redText}> 10 </Text>
             <Text>You will get</Text>
           </View>
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={[styles.redText, { color: "blue" }]}>View Report</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
       <View

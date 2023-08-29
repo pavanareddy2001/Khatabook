@@ -4,6 +4,7 @@ import Splash from './src/Screens/Splash';
 import {NavigationContainer} from '@react-navigation/native';
 import MyTabs from './src/Routes/BottomTabNavigation';
 import StackNavigation from './src/Routes/StackNavigation';
+import Toast from 'react-native-toast-message';
 import store from './src/Redux/store';
 import { Provider } from 'react-redux';
 import {openDatabase} from 'react-native-sqlite-storage';
@@ -313,6 +314,9 @@ const App = () => {
     <SafeAreaView style={{flex: 1}}>
       <Provider store={store}>
         <StackNavigation />
+        <Toast
+        position='bottom'
+        />
       </Provider>
     </SafeAreaView>
   );
