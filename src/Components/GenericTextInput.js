@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import React from 'react'
 
-const GenericTextInput = ({placeholder,value,onChangeText}) => {
+const GenericTextInput = ({placeholder,value,onChangeText, keyboardType}) => {
   return (
         <TextInput
         style={styles.textInput}
@@ -9,6 +9,7 @@ const GenericTextInput = ({placeholder,value,onChangeText}) => {
         value={value}
         onChangeText={onChangeText}
         autoFocus = {true}
+        keyboardType={keyboardType}
         />
   )
 }
