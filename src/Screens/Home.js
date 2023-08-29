@@ -6,31 +6,33 @@ import {
   TouchableOpacity,
   View,
   FlatList,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import GenericTextInput from '../Components/GenericTextInput';
-import BussinessListModal from '../Components/BussinessListModal';
-import CustomHeader from '../Components/CustomHeader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {openDatabase} from 'react-native-sqlite-storage';
-import {useDispatch} from 'react-redux';
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import GenericTextInput from "../Components/GenericTextInput";
+import BussinessListModal from "../Components/BussinessListModal";
+import CustomHeader from "../Components/CustomHeader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { openDatabase } from "react-native-sqlite-storage";
+import { useDispatch } from "react-redux";
 
-var db = openDatabase({name: 'UserDatabase.db'});
+var db = openDatabase({ name: "UserDatabase.db" });
 
-const Home = props => {
+const Home = (props) => {
   const dispatch = useDispatch();
-  const [customerData, setCustomerData] = useState('');
+  const [customerData, setCustomerData] = useState("");
+  const [masterCusData, setMasterCusData] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedBussiness, setSelectedBussiness] = useState(null);
+  const [searchTxt, setSearchTxt] = useState("");
   const getCustomerData = async (
     BusinessId,
-    onSuccess = data => {},
-    onFailure = error => {},
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
   ) => {
     try {
-      await db.transaction(async tx => {
+      await db.transaction(async (tx) => {
         tx.executeSql(
-          'select * from Customer WHERE BusinessId=(?)',
+          "select * from Customer WHERE BusinessId=(?)",
           [BusinessId],
           (txn, results) => {
             var len = results?.rows?.length;
@@ -38,28 +40,29 @@ const Home = props => {
             for (let i = 0; i < len; ++i) {
               temp.push(results.rows.item(i));
             }
-            console.log('getCustomer', temp);
+            console.log("getCustomer", temp);
             onSuccess(temp);
             setCustomerData(temp);
+            setMasterCusData(temp);
           },
-          err => {
+          (err) => {
             onFailure(err);
-          },
+          }
         );
       });
     } catch (error) {
-      console.log('getCustomerData', error);
+      console.log("getCustomerData", error);
       onFailure(error);
     }
   };
 
   async function getBusinessData() {
-    const value = await AsyncStorage.getItem('selectedBussiness');
+    const value = await AsyncStorage.getItem("selectedBussiness");
     if (value !== null) {
-      console.log('getBusinessData', value);
+      console.log("getBusinessData", value);
       setSelectedBussiness(JSON.parse(value));
-      dispatch({type: 'UPDATE_BUSINESSDATA', payload: JSON.parse(value)});
-      getCustomerData(JSON.parse(value).BusinessId)
+      dispatch({ type: "UPDATE_BUSINESSDATA", payload: JSON.parse(value) });
+      getCustomerData(JSON.parse(value).BusinessId);
     }
   }
   useEffect(() => {
@@ -68,41 +71,55 @@ const Home = props => {
 
   useEffect(() => {
     let willFocus;
-    willFocus = props.navigation.addListener('focus', async payload => {
+    willFocus = props.navigation.addListener("focus", async (payload) => {
       getCustomerData(selectedBussiness?.BusinessId);
-      console.log('====================================');
+      console.log("====================================");
       console.log("callec");
-      console.log('====================================');
+      console.log("====================================");
     });
     return willFocus;
   }, [selectedBussiness]);
 
+  useEffect(() => {
+    if (searchTxt !== "") {
+      const filteredData = masterCusData?.filter((item) => {
+        return item?.CustomerName?.toLowerCase()?.includes(
+          searchTxt?.toLowerCase()
+        );
+      });
+      setCustomerData(filteredData);
+    } else {
+      setCustomerData(masterCusData);
+    }
+  }, [searchTxt]);
+
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       {visible ? (
         <BussinessListModal
           visible={visible}
           onRequestClose={() => setVisible(false)}
           selectedBusinessId={selectedBussiness?.BusinessId}
           onpresscreatekb={() => {
-            setVisible(false)
-            props.navigation.navigate('NewKhata');
+            setVisible(false);
+            props.navigation.navigate("NewKhata");
           }}
         />
       ) : null}
       <View style={styles.subView}>
         <View>
           <TouchableOpacity
-            style={{flexDirection: 'row', paddingTop: 12}}
+            style={{ flexDirection: "row", paddingTop: 12 }}
             onPress={() => {
               setVisible(true);
-            }}>
+            }}
+          >
             <Image
-              style={{width: 30, height: 30, tintColor: 'white'}}
-              source={require('../Images/bookA.png')}
+              style={{ width: 30, height: 30, tintColor: "white" }}
+              source={require("../Images/bookA.png")}
             />
             <Text style={styles.text}>
-              {selectedBussiness?.BusinessName || 'Choose a Business'}{' '}
+              {selectedBussiness?.BusinessName || "Choose a Business"}{" "}
             </Text>
           </TouchableOpacity>
         </View>
@@ -117,36 +134,45 @@ const Home = props => {
             <Text>You will get</Text>
           </View>
           <TouchableOpacity>
-            <Text style={[styles.redText, {color: 'blue'}]}>View Report</Text>
+            <Text style={[styles.redText, { color: "blue" }]}>View Report</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <View style={[styles.subView2, {width: Dimensions.get('screen').width}]}>
-        <GenericTextInput placeholder={'Search Customer'} />
+      <View
+        style={[styles.subView2, { width: Dimensions.get("screen").width }]}
+      >
+        <GenericTextInput
+          placeholder={"Search Customer"}
+          value={searchTxt}
+          onChangeText={setSearchTxt}
+        />
         <TouchableOpacity>
           <Image
             style={styles.filterImage}
-            source={require('../Images/filter.png')}
+            source={require("../Images/filter.png")}
           />
         </TouchableOpacity>
       </View>
 
       <FlatList
         data={customerData}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               onPress={() => {
-                props.navigation.navigate('CustomerTransactionView',item);
-              }}>
+                props.navigation.navigate("CustomerTransactionView", item);
+              }}
+            >
               <View style={styles.customerListView}>
                 <View style={styles.customerNameView}>
                   <View style={styles.letterCircle}>
-                    <Text style={styles.alphabetText}>{item.CustomerName[0]}</Text>
+                    <Text style={styles.alphabetText}>
+                      {item.CustomerName[0]}
+                    </Text>
                   </View>
                   <View>
                     <Text style={styles.bussinessNameText}>
-                      {' '}
+                      {" "}
                       {item?.CustomerName}
                     </Text>
                     <Text> {item.login}</Text>
@@ -164,11 +190,12 @@ const Home = props => {
       <TouchableOpacity
         style={styles.addCustomerButton}
         onPress={() => {
-          props.navigation.navigate('AddCustomer');
-        }}>
+          props.navigation.navigate("AddCustomer");
+        }}
+      >
         <Image
-          source={require('../Images/addCustomer.png')}
-          style={{width: 35, height: 35}}
+          source={require("../Images/addCustomer.png")}
+          style={{ width: 35, height: 35 }}
         />
         <Text style={styles.addCustomerText}>ADD CUSTOMER</Text>
       </TouchableOpacity>
@@ -181,43 +208,43 @@ export default Home;
 
 const styles = StyleSheet.create({
   subView: {
-    width: '100%',
-    height: Dimensions.get('screen').height * 0.2,
-    backgroundColor: 'blue',
+    width: "100%",
+    height: Dimensions.get("screen").height * 0.2,
+    backgroundColor: "blue",
   },
   text: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 5,
     marginLeft: 8,
   },
   viewBox: {
     borderWidth: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 15,
     margin: 10,
-    flexDirection: 'row',
+    flexDirection: "row",
     borderRadius: 5,
   },
   inboxView: {
-    marginRight: '15%',
+    marginRight: "15%",
   },
   greentext: {
-    color: 'green',
+    color: "green",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   redText: {
-    color: 'red',
+    color: "red",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   subView2: {
-    width: '100%',
-    flexDirection: 'row',
+    width: "100%",
+    flexDirection: "row",
     borderWidth: 0.5,
-    borderBottomColor: 'grey',
+    borderBottomColor: "grey",
     // backgroundColor: 'red'
   },
   filterImage: {
@@ -227,11 +254,11 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red'
   },
   customerListView: {
-    flexDirection: 'row',
+    flexDirection: "row",
     // marginTop:10,
     // marginLeft:10,
     borderWidth: 0.5,
-    borderBottomColor: 'grey',
+    borderBottomColor: "grey",
     padding: 10,
   },
   letterCircle: {
@@ -245,31 +272,31 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   customerNameView: {
-    flexDirection: 'row',
-    marginRight: '50%',
+    flexDirection: "row",
+    marginRight: "50%",
   },
   addCustomerView: {
-    flexDirection: 'row-reverse',
-    marginTop: '70%',
+    flexDirection: "row-reverse",
+    marginTop: "70%",
   },
   addCustomerButton: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
     bottom: 20,
     right: 20,
     borderWidth: 1,
-    width: '50%',
+    width: "50%",
     borderRadius: 25,
-    backgroundColor: 'brown',
+    backgroundColor: "brown",
   },
   addCustomerText: {
     padding: 10,
-    color: 'white',
+    color: "white",
   },
   topBlankView: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     bottom: 0,
     left: 0,
