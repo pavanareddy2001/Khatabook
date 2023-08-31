@@ -5,30 +5,30 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import CustomerTransactionDetailCard from '../Components/CustomerTransactionDetailCard';
-import GenericTextInput from '../Components/GenericTextInput';
-import GenericButton from '../Components/GenericButton';
-import CustomHeader from '../Components/CustomHeader';
-import {openDatabase} from 'react-native-sqlite-storage';
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import CustomerTransactionDetailCard from "../Components/CustomerTransactionDetailCard";
+import GenericTextInput from "../Components/GenericTextInput";
+import GenericButton from "../Components/GenericButton";
+import CustomHeader from "../Components/CustomHeader";
+import { openDatabase } from "react-native-sqlite-storage";
 import { useIsFocused } from "@react-navigation/native";
-var db = openDatabase({name: 'UserDatabase.db'});
+var db = openDatabase({ name: "UserDatabase.db" });
 
-const CustomerTransactionView = props => {
+const CustomerTransactionView = (props) => {
   const isFocused = useIsFocused();
-  const [transactionDetails, setTransactionDetails] = useState('');
-  const {navigation} = props;
-  const [accountDetails  , setAccountDetails  ] = useState(null)
+  const [transactionDetails, setTransactionDetails] = useState([]);
+  const { navigation } = props;
+  const [accountDetails, setAccountDetails] = useState(null);
   const getAccountTransctionData = async (
     CustomerAccountId_,
-    onSuccess = data => {},
-    onFailure = error => {},
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
   ) => {
     try {
-      await db.transaction(async tx => {
+      await db.transaction(async (tx) => {
         tx.executeSql(
-          'select * from AccountTransction where CustomerAccountId = ?',
+          "select * from AccountTransction where CustomerAccountId = ?",
           [CustomerAccountId_],
           (txn, results) => {
             var len = results?.rows?.length;
@@ -36,31 +36,30 @@ const CustomerTransactionView = props => {
             for (let i = 0; i < len; ++i) {
               temp.push(results.rows.item(i));
             }
-            console.log('getAccountTransction', temp);
+            console.log("getAccountTransction", temp);
             onSuccess(temp);
             setTransactionDetails(temp);
           },
-          err => {
+          (err) => {
             onFailure(err);
-          },
+          }
         );
       });
     } catch (error) {
-      console.log('getAccountTransctionData', error);
+      console.log("getAccountTransctionData", error);
       onFailure(error);
     }
   };
 
-
   const getCustomerAccountData = async (
     CustomerAccountId_,
-    onSuccess = data => {},
-    onFailure = error => {},
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
   ) => {
     try {
-      await db.transaction(async tx => {
+      await db.transaction(async (tx) => {
         tx.executeSql(
-          'select * from Customer where CustomerAccountId = ?',
+          "select * from Customer where CustomerAccountId = ?",
           [CustomerAccountId_],
           (txn, results) => {
             var len = results?.rows?.length;
@@ -69,16 +68,16 @@ const CustomerTransactionView = props => {
               temp.push(results.rows.item(i));
             }
 
-            console.log('getCustomerAccountData', temp);
+            console.log("getCustomerAccountData", temp);
             onSuccess(temp);
           },
-          err => {
+          (err) => {
             onFailure(err);
-          },
+          }
         );
       });
     } catch (error) {
-      console.log('getCustomerData', error);
+      console.log("getCustomerData", error);
       onFailure(error);
     }
   };
@@ -88,29 +87,54 @@ const CustomerTransactionView = props => {
   }, [props.route.params.CustomerAccountId, isFocused]);
   useEffect(() => {
     if (props.route.params.CustomerAccountId) {
-      getCustomerAccountData(props.route.params.CustomerAccountId, data => {
+      getCustomerAccountData(props.route.params.CustomerAccountId, (data) => {
         setAccountDetails(data[0]);
       });
     }
   }, [props.route.params.CustomerAccountId, isFocused]);
+  function isGave(amount) {
+    return parseInt(amount) < 0;
+  }
+  function reverse(array){
+    return array?.map((item,idx) => array[array?.length-1-idx])
+  }
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
+      
       <CustomHeader
         backArrowShow={true}
-        headerTitle={'CustomerTransactionView'}
+        headerTitle={`${props.route.params.CustomerName}'s Transactions`}
         navigation={navigation}
       />
       <View style={styles.topView}>
-        <Text style={styles.text}>{props.route.params.CustomerName}</Text>
         <View style={styles.topViewBox}>
-          <Text style={styles.textInViewBox}>You will give</Text>
-          <Text style={styles.amounttext}>{accountDetails?.AccountBalance}</Text>
+          <Text style={styles.textInViewBox}>
+            {isGave(accountDetails?.AccountBalance)
+              ? "You will give"
+              : "You will get"}
+          </Text>
+          <Text
+            style={[
+              styles.amounttext,
+              {
+                color: isGave(accountDetails?.AccountBalance) ? "red" : "green",
+              },
+            ]}
+          >
+           {isGave(accountDetails?.AccountBalance)
+              ? parseInt(accountDetails?.AccountBalance) * -1
+              : accountDetails?.AccountBalance || 0} Rs
+          </Text>
+        </View>
+        <View style={{flexDirection:"row",justifyContent:"space-between",margin:10}}>
+          <Text style={{color:"white",fontSize:16,fontWeight:"500"}} >Trans Date</Text>
+          <Text style={{color:"white",fontSize:16,fontWeight:"500"}}>Trans Amount</Text>
         </View>
       </View>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <FlatList
-          data={transactionDetails}
-          renderItem={({item}) => {
+          data={reverse(transactionDetails)}
+          renderItem={({ item }) => {
             return (
               <CustomerTransactionDetailCard
                 DateandTime={item.TransactionDatatime}
@@ -120,7 +144,7 @@ const CustomerTransactionView = props => {
                 BillNo={item.BillNo}
                 ItemDetails={item.TransactionDescription}
                 onPressCard={() => {
-                  props.navigation.navigate('TransactionEntryDetails',item);
+                  props.navigation.navigate("TransactionEntryDetails", item);
                 }}
                 TransctionType={item.TransctionType}
               />
@@ -129,24 +153,26 @@ const CustomerTransactionView = props => {
         />
       </View>
 
-      <View style={{flexDirection: 'row', width: '100%', alignSelf: 'center'}}>
+      <View
+        style={{ flexDirection: "row", width: "100%", alignSelf: "center" }}
+      >
         <GenericButton
-          buttonName={'YOU GAVE'}
-          buttonStyle={{width: '45%', backgroundColor: 'red'}}
+          buttonName={"YOU GAVE"}
+          buttonStyle={{ width: "45%", backgroundColor: "red" }}
           onPressAction={() => {
-            props.navigation.navigate('TransactionAmount', {
+            props.navigation.navigate("TransactionAmount", {
               ...props.route.params,
-              TransctionType: 'GAVE',
+              TransctionType: "GAVE",
             });
           }}
         />
         <GenericButton
-          buttonName={'YOU GOT'}
-          buttonStyle={{width: '45%', backgroundColor: 'green'}}
+          buttonName={"YOU GOT"}
+          buttonStyle={{ width: "45%", backgroundColor: "green" }}
           onPressAction={() => {
-            props.navigation.navigate('TransactionAmount', {
+            props.navigation.navigate("TransactionAmount", {
               ...props.route.params,
-              TransctionType: 'GOT',
+              TransctionType: "GOT",
             });
           }}
         />
@@ -159,29 +185,34 @@ export default CustomerTransactionView;
 
 const styles = StyleSheet.create({
   topView: {
-    height: Dimensions.get('screen').height * 0.15,
-    backgroundColor: 'blue',
+    //height: Dimensions.get("screen").height * 0.10,
+    backgroundColor: "blue",
   },
   text: {
-    color: 'white',
-    fontSize: 20,
+    marginTop:10,
+    marginLeft: 10,
+    color: "white",
+    fontSize: 18,
+    fontWeight:"600",
   },
   topViewBox: {
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingVertical: 15,
-    paddingLeft: 10,
+    flexDirection: "row",
+    paddingVertical: 12,
+    paddingHorizontal: 10,
     margin: 10,
-    borderRadius: 5,
-    backgroundColor: 'white',
+    borderRadius: 10,
+    backgroundColor: "white",
+    justifyContent:"space-between",
+    alignItems:"center"
   },
   textInViewBox: {
-    color: 'black',
-    fontSize: 16,
-    paddingRight: '60%',
+    color: "black",
+    fontSize: 14,
+   fontWeight:"600",
+    textTransform:"uppercase"
   },
   amounttext: {
-    color: 'green',
+    color: "green",
     fontSize: 16,
   },
 });

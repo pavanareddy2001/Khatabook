@@ -18,10 +18,7 @@ const CustomerTransactionDetailCard = ({
         onPressCard();
       }}>
       <View >
-        <Text style={{marginBottom: 12}}>{DateandTime}</Text>
-        {/* <Text style={styles.marginStyle}>Bal. {Balance}</Text> */}
-        <Text>Bill No. {BillNo}</Text>
-        {/* <Text>{ItemDetails}</Text> */}
+        <Text style={{fontSize:14,color:"black",fontWeight:"400"}}>{DateandTime}</Text>
       </View>
       <View style={[{flexDirection: 'row'}]}>
           <Text style={styles.youGaveAmount}>{TransctionType === 'GAVE' && YouGaveAmount}</Text>
@@ -35,7 +32,7 @@ export default CustomerTransactionDetailCard;
 
 const styles = StyleSheet.create({
   cardMainView: {
-    borderWidth: 0.5,
+    borderWidth: 0.3,
     margin: 8,
     padding: 10,
     flexDirection: 'row',

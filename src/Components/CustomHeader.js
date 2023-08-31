@@ -30,26 +30,25 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'blue',
     alignItems: 'center',
-    justifyContent: 'center'
-    // marginBottom:10
-    //position:'absolute'
-    
+    justifyContent: 'center',
+    borderBottomWidth:0.4,
+    borderColor:"white"
   },
   backBtn: {
     position:"absolute",
-    left: 16
+    left: 10
   },
   backArrowImg: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     tintColor: 'white',
-    // position:"absolute",
     left: 0
     //  zIndex:4
   },
   headerTitleStyle: {
-    fontSize: 16,
+    fontSize: 18,
     color: 'white',
+    fontWeight:"700"
     // padding: 10,
     // position:"absolute",
     //  textAlign:"center",
