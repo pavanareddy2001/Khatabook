@@ -14,6 +14,7 @@ import CustomHeader from "../Components/CustomHeader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { openDatabase } from "react-native-sqlite-storage";
 import { useDispatch } from "react-redux";
+import { showToast } from "../utils";
 
 var db = openDatabase({ name: "UserDatabase.db" });
 
@@ -190,7 +191,14 @@ const Home = (props) => {
       <TouchableOpacity
         style={styles.addCustomerButton}
         onPress={() => {
-          props.navigation.navigate("AddCustomer");
+          if (selectedBussiness?.BusinessName) {
+            props.navigation.navigate("AddCustomer");
+          } else {
+            showToast({
+              mainText: "Choose a Business to add customer",
+              type: "error",
+            });
+          }
         }}
       >
         <Image

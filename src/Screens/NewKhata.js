@@ -4,6 +4,7 @@ import GenericTextInput from "../Components/GenericTextInput";
 import GenericButton from "../Components/GenericButton";
 import { openDatabase } from "react-native-sqlite-storage";
 import CustomHeader from "../Components/CustomHeader";
+import { showToast } from "../utils";
 
 var db = openDatabase({ name: "UserDatabase.db" });
 const NewKhata = (props) => {
@@ -95,9 +96,10 @@ const NewKhata = (props) => {
         buttonName={"CREATE"}
         onPressAction={() => {
           insertIntoBusiness(() => {
-            Alert.alert("Business created");
+            showToast({mainText:"Business created",type:"success"})
             setBusinessName("");
             getBusinessData();
+            props.navigation.goBack()
           });
         }}
       />
