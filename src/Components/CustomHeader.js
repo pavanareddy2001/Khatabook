@@ -43,16 +43,10 @@ const styles = StyleSheet.create({
     height: 25,
     tintColor: 'white',
     left: 0
-    //  zIndex:4
   },
   headerTitleStyle: {
     fontSize: 18,
     color: 'white',
     fontWeight:"700"
-    // padding: 10,
-    // position:"absolute",
-    //  textAlign:"center",
-    //  width:"100%",
-    //  zIndex:1
   },
 });

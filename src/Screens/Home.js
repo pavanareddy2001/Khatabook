@@ -134,9 +134,6 @@ const Home = (props) => {
             <Text style={styles.redText}> 10 </Text>
             <Text>You will get</Text>
           </View>
-          {/* <TouchableOpacity>
-            <Text style={[styles.redText, { color: "blue" }]}>View Report</Text>
-          </TouchableOpacity> */}
         </View>
       </View>
       <View
@@ -187,7 +184,7 @@ const Home = (props) => {
           );
         }}
       />
-      {/* <View style={styles.addCustomerView}> */}
+    
       <TouchableOpacity
         style={styles.addCustomerButton}
         onPress={() => {
@@ -207,7 +204,6 @@ const Home = (props) => {
         />
         <Text style={styles.addCustomerText}>ADD CUSTOMER</Text>
       </TouchableOpacity>
-      {/* </View> */}
     </View>
   );
 };
@@ -222,8 +218,8 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
     marginTop: 5,
     marginLeft: 8,
   },
@@ -253,18 +249,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 0.5,
     borderBottomColor: "grey",
-    // backgroundColor: 'red'
   },
   filterImage: {
     width: 40,
     height: 40,
     margin: 10,
-    // backgroundColor: 'red'
   },
   customerListView: {
     flexDirection: "row",
-    // marginTop:10,
-    // marginLeft:10,
+   // justifyContent:"center",
     borderWidth: 0.5,
     borderBottomColor: "grey",
     padding: 10,
@@ -274,6 +267,8 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: 17.5,
     borderWidth: 0.3,
+     justifyContent:"center",
+     alignItems:"center"
   },
   alphabetText: {
     marginLeft: 12,
@@ -294,7 +289,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20,
-    borderWidth: 1,
     width: "50%",
     borderRadius: 25,
     backgroundColor: "brown",
