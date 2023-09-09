@@ -1,14 +1,16 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 
-const GenericButton = ({buttonName, onPressAction=()=>{}, buttonStyle = {}}) => {
+const GenericButton = ({buttonName, onPressAction=()=>{}, buttonStyle = {}, textStyle= {}, icon, iconStyle = {}}) => {
   return (
     <TouchableOpacity
+      activeOpacity={0.5}
       onPress={() => {
         onPressAction();
       }}
       style={[styles.button, buttonStyle]}>
-      <Text style={styles.text}>{buttonName}</Text>
+        {icon ? <Image  style={[{ height: 20, width: 20,}, iconStyle]} source={icon} /> : null}
+      <Text style={[styles.text, textStyle]}>{buttonName}</Text>
     </TouchableOpacity>
   );
 };
@@ -23,6 +25,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center'
   },
   text: {
     color: 'white',
