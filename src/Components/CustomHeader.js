@@ -17,7 +17,7 @@ const CustomHeader = ({headerTitle, navigation, backArrowShow}) => {
           />
         </TouchableOpacity>
       ) : null}
-      <Text style={styles.headerTitleStyle}>{headerTitle}</Text>
+      <Text numberOfLines={1} style={styles.headerTitleStyle}>{headerTitle}</Text>
     </View>
   );
 };
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   headerTitleStyle: {
     fontSize: 18,
     color: 'white',
-    fontWeight:"700"
+    fontWeight:"700",
+    width: '80%'
   },
 });

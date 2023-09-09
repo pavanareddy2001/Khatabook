@@ -1,88 +1,133 @@
-import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
 import CustomHeader from '../Components/CustomHeader';
+import {
+  BUSINESS_CATEGORY,
+  BUSINESS_TYPE,
+  CALL,
+  LOCATION_PROFILE,
+  RIGHTARROW,
+  USER,
+} from '../Images';
+import ProgressCircle from 'react-native-progress-circle';
 
-function ProfileCard({source,title,value,arrowSource}){
- return(
-  <View>
-    <Image source={source}></Image>
-    <Text>{title}</Text>
-    <Text>{value}</Text>
-    <Image source={arrowSource}></Image>
-  </View>
- ) 
+function ProfileCard({source, title, value, arrowSource, showRoghtArrow}) {
+  return (
+    <View style={styles.cardView}>
+      <Image style={styles.iconCard} source={source}></Image>
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <Text style={value ? styles.withValue : styles.withoutValue}>
+          {title}
+        </Text>
+        {value ? <Text style={styles.valueTxt}>{value}</Text> : null}
+      </View>
+      {value ? (
+        showRoghtArrow ? (
+          <Image style={styles.rightArrow} source={RIGHTARROW}></Image>
+        ) : null
+      ) : (
+        <TouchableOpacity style={styles.addDetails}>
+          <Text style={styles.addDetailsTxt}>Add Details</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 }
 
-const Profile = (props) => {
-  const {navigation}=props
+const Profile = props => {
+  const {navigation} = props;
   return (
-    <View>
-    <CustomHeader
-    backArrowShow={true}
-    headerTitle={"Profile"}
-    navigation={navigation}
-
-   />
-    <ScrollView>
-      <View>
-        <View style={styles.headerView}>
-          <Text>Personal info</Text>
-        </View>
-        <View>
-        
-          <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>Name</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
-         
-          <View style={styles.inView}>
-            <Text>Registered number</Text>
-            <Text style={styles.blackText}>73376578778</Text>
+    <View style={{flex: 1}}>
+      <CustomHeader
+        backArrowShow={true}
+        headerTitle={'Profile'}
+        navigation={navigation}
+      />
+      <ScrollView style={{flex: 1}}>
+        <View style={{alignItems: 'center', backgroundColor: 'white',}}>
+          <View style={styles.headerView}>
+            <Text style={styles.headerTxt}>Profile Strength</Text>
           </View>
-          <TouchableOpacity style={styles.inView}>
-            <Text>Business name</Text>
-            <Text style={styles.blackText}>Food Business</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View>
-        <View style={styles.headerView}>
-          <Text>Business info</Text>
-        </View>
-        <TouchableOpacity style={styles.inView}>
-          <Text>Business address</Text>
-          <Text style={styles.blackText}>Bangalore 560037</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.inView}>
-          <Text>Business Category</Text>
-          <Text style={styles.blackText}> Medical</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>Business type</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
-      </View>
-
-      <View>
-        <View style={styles.headerView}>
-          <Text>Financial info</Text>
+          <ProgressCircle
+            outerCircleStyle={{margin: 20}}
+            percent={30}
+            radius={40}
+            borderWidth={10}
+            color="#3399FF"
+            shadowColor="#999"
+            bgColor="#fff">
+            <Text style={{fontSize: 15}}>{'70%'}</Text>
+          </ProgressCircle>
+          <View style={{ flexDirection: 'row', marginBottom: 12}}>
+            <Text style={styles.profileStrengthTxt}>Profile Strength : </Text>
+            <Text style={styles.profileRating}>Good</Text>
+          </View>
         </View>
 
-        <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>GSTIN</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
+        <View>
+          <View style={styles.headerView}>
+            <Text style={styles.headerTxt}>Personal Information</Text>
+          </View>
+          <View>
+            <ProfileCard
+              source={USER}
+              title={'Name'}
+              value={'Ajay'}
+              showRoghtArrow={true}
+            />
+            <ProfileCard
+              source={CALL}
+              title={'Registered number'}
+              value={'878347373434'}
+              showRoghtArrow={false}
+            />
+          </View>
+        </View>
 
+        <View>
+          <View style={styles.headerView}>
+            <Text style={styles.headerTxt}>Business Information</Text>
+          </View>
+          <ProfileCard
+            source={BUSINESS_CATEGORY}
+            title={'Business Category'}
+            value={'Manufacturing'}
+            showRoghtArrow={true}
+          />
+          <ProfileCard
+            source={BUSINESS_TYPE}
+            title={'Business Type'}
+            // value={'878347373434'}
+            showRoghtArrow={false}
+          />
+          <ProfileCard
+            source={LOCATION_PROFILE}
+            title={'Business Address'}
+            // value={'878347373434'}
+            showRoghtArrow={false}
+          />
+        </View>
 
-      </View>
-    </ScrollView>
+        <View>
+          <View style={styles.headerView}>
+            <Text style={styles.headerTxt}>Financial Information</Text>
+          </View>
+
+          <ProfileCard
+            source={LOCATION_PROFILE}
+            title={'GSTIN'}
+            // value={'878347373434'}
+            showRoghtArrow={false}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -94,27 +139,90 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 0.5,
     borderColor: 'lightgrey',
+    backgroundColor: '#CBE6F7',
+    width: '100%',
   },
   inView: {
     padding: 10,
     borderBottomWidth: 0.5,
     borderColor: 'lightgrey',
-    backgroundColor:"white"
+    backgroundColor: 'white',
   },
   blackText: {
     color: 'black',
   },
-  addDetailbutton:{
-   borderRadius:25,
-   borderWidth:1,
-   color:"blue",
-   fontSize:12,
-   padding:5,
+  addDetailbutton: {
+    borderRadius: 25,
+    borderWidth: 1,
+    color: 'blue',
+    fontSize: 12,
+    padding: 5,
   },
-  flex:{
-   flexDirection:"row",
-  justifyContent:"space-between"
-}
-
-
+  flex: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  rightArrow: {
+    height: 20,
+    width: 20,
+  },
+  cardView: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: 'white',
+    borderBottomWidth: 0.2,
+    borderBottomColor: 'gray',
+    height: 65,
+  },
+  iconCard: {
+    height: 25,
+    width: 25,
+    marginRight: 16,
+  },
+  withoutValue: {
+    fontSize: 14,
+    color: 'black',
+    fontWeight: '400',
+  },
+  withValue: {
+    fontSize: 12,
+    color: 'gray',
+    fontWeight: '400',
+  },
+  valueTxt: {
+    fontSize: 15,
+    color: 'black',
+    fontWeight: '400',
+    marginTop: 4,
+  },
+  addDetails: {
+    borderWidth: 0.5,
+    padding: 7,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    borderColor: 'blue',
+  },
+  addDetailsTxt: {
+    fontSize: 12,
+    color: 'blue',
+    fontWeight: '400',
+  },
+  headerTxt: {
+    fontSize: 15,
+    color: 'black',
+    fontWeight: '500',
+  },
+  profileRating: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'green'
+  },
+  profileStrengthTxt: {
+    fontSize: 14,
+    fontWeight: '300',
+    color: 'black'
+  }
 });

@@ -1,5 +1,7 @@
 import {
+  Alert,
   Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +14,10 @@ import CustomHeader from "../Components/CustomHeader";
 import { openDatabase } from "react-native-sqlite-storage";
 import { useIsFocused } from "@react-navigation/native";
 import TransactionAmount from "./TransactionAmount";
+import { DELETE, EDIT, SHARE } from "../Images";
+import { getCurrentTime } from "../utils";
+import { showToast } from "../utils";
+
 var db = openDatabase({ name: "UserDatabase.db" });
 
 function TransactionEntryCard({ title, value }) {
@@ -31,6 +37,7 @@ const TransactionEntryDetails = (props) => {
   console.log("====================================");
   const [transactionEntryDetails, setTransactionEntryDetails] = useState({});
   const [customerDetails, setCustomerDetails] = useState("");
+  console.log('transactionEntryDetails', transactionEntryDetails);
   const getSingleAccountTransctionData = async (
     AccountTransctionId_,
     onSuccess = (data) => {},
@@ -106,23 +113,133 @@ const TransactionEntryDetails = (props) => {
       getCustomerAccountData(props.route.params?.CustomerAccountId);
     }
   }, [props.route.params.CustomerAccountId]);
+  
+  const updateAccountBalance = async (
+    {
+      AccountBalance = "",
+      UpdatedBy = "",
+      CustomerAccountId = "",
+      UpdatedDateTime = "",
+    },
+
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
+  ) => {
+    try {
+      await db.transaction((tx) => {
+        tx.executeSql(
+          `UPDATE Customer set AccountBalance=(?), UpdatedBy=(?), UpdatedDateTime=(?) where CustomerAccountId=?`,
+          [AccountBalance, UpdatedBy, UpdatedDateTime, CustomerAccountId],
+          (tx, results) => {
+            console.log("Results", results.rowsAffected);
+            if (results.rowsAffected > 0) {
+              onSuccess(results);
+            } else {
+              onFailure(results?.message);
+            }
+          },
+          (err) => {
+            console.log("updateCustomerAccountBalance Failed", err);
+            onFailure(err);
+          }
+        );
+      });
+    } catch (error) {
+      onFailure(error);
+    }
+  };
+  async function deleteTransaction(
+    {
+      accountTransctionId,
+      oldAccountBalance_,
+      transactionAmt,
+      customerAccountId
+    },
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
+  ) {
+    try {
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          `DELETE FROM AccountTransction where AccountTransctionId=?`,
+          [
+            accountTransctionId
+          ],
+          (tx, results) => {
+            if (results?.rowsAffected === 1) {
+              // update balance
+              let oldAccountBalance = oldAccountBalance_ || 0;
+              let newAccountBal = 0;
+              if (props.route.params.TransctionType === "GAVE") {
+                newAccountBal =
+                  parseFloat(oldAccountBalance) -
+                  parseFloat(transactionAmt) 
+              } else {
+                newAccountBal =
+                  parseFloat(oldAccountBalance) +
+                  parseFloat(transactionAmt) 
+              }
+              updateAccountBalance(
+                {
+                  AccountBalance: newAccountBal,
+                  CustomerAccountId: customerAccountId,
+                  UpdatedBy: "Admin",
+                  UpdatedDateTime: getCurrentTime(),
+                },
+                (data) => {
+                  onSuccess();
+                }
+              );
+            } else {
+              console.log("UpdateIntoAccountTransction Failed", results);
+              onFailure(results?.message);
+            }
+          },
+          (error) => {
+            console.log("UpdateIntoAccountTransction Failed", error);
+            onFailure(results?.message);
+          }
+        );
+      });
+    } catch (error) {
+      console.log("errorereoooo", error);
+      onFailure(error);
+    }
+  }
+  function onPressDelete(params, onSuccess) {
+    Alert.alert("Delete Transaction", "Are you sure want to delete", [
+      { text: "Cancel" },
+      { text: "Confirm", onPress: () => {
+        deleteTransaction(params, ()=>{
+          onSuccess();
+        });
+      } },
+    ]);
+  }
   return (
     <View style={{ flex: 1 }}>
       <CustomHeader
         backArrowShow={true}
-        headerTitle={"Transaction Entry"}
+        headerTitle={"Transaction Details"}
         navigation={navigation}
       />
-      <ScrollView style={{ flex: 1, width: "100%" }}>
+      <ScrollView style={{ flex: 1, width: "100%" }} scrollEnabled={false}>
         <View style={styles.blueBox}>
           <View style={styles.whiteBox}>
-            <TransactionEntryCard
-              title={"Customer Name"}
-              value={customerDetails.CustomerName}
-            />
+            <View>
+              <View style={{flexDirection: 'row',alignItems: 'center', marginBottom: 20}}>
+                <View style={styles.circleView}>
+                  <Text style={styles.textLetter}>{customerDetails?.CustomerName ? customerDetails?.CustomerName[0] : ''}</Text>
+                </View>
+                <View style={{marginLeft: 25, justifyContent: 'space-between'}}>
+                  <Text style={styles.customerName}>{customerDetails.CustomerName}</Text>
+                  <Text style={styles.transDate}>{transactionEntryDetails.TransactionDatatime}</Text>
+                </View>
+              </View>
+            </View>
             <TransactionEntryCard
               title={"Details"}
-              value={transactionEntryDetails.TransactionDescription}
+              value={transactionEntryDetails.TransactionDescription || '-'}
             />
 
             <TransactionEntryCard
@@ -132,11 +249,15 @@ const TransactionEntryDetails = (props) => {
 
             <TransactionEntryCard
               title={"Transaction Amount"}
-              value={transactionEntryDetails.TransctionAmount}
+              value={"₹ " + transactionEntryDetails.TransctionAmount}
+            />
+            <TransactionEntryCard
+              title={"Running Balance"}
+              value={"₹ " + customerDetails.AccountBalance}
             />
 
             <TouchableOpacity
-              style={{ alignItems: "center" }}
+              style={{ alignItems: "center" , flexDirection: 'row', justifyContent: 'center', marginTop: 12}}
               onPress={() => {
                 props.navigation.navigate("TransactionAmount", {
                   isEdit: true,
@@ -144,29 +265,47 @@ const TransactionEntryDetails = (props) => {
                 });
               }}
             >
-              <Text style={{ color: "blue", padding: 10 }}>EDIT </Text>
+              <Image style={{height: 16, width: 16, tintColor: 'blue'}} source={EDIT} />
+              <Text style={{ color: "blue", padding: 10 , fontSize: 15, fontWeight: '600'}}>EDIT ENTRY</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-      {/* <View
+      <View
         style={{ flexDirection: "row", width: "100%", alignSelf: "center" }}
       >
         <GenericButton
-          buttonName={"YOU GAVE"}
-          buttonStyle={{ width: "45%", backgroundColor: "red" }}
-          onPressAction={() => {
-            props.navigation.navigate("TransactionAmount");
+          buttonName={"SHARE"}
+          icon={SHARE}
+          iconStyle={{tintColor: 'white', marginRight: 10}}
+          buttonStyle={{ width: "45%", backgroundColor: "blue" }}
+          onPressAction={async () => {
+            
           }}
         />
-        <GenericButton
-          buttonName={"YOU GOT"}
-          buttonStyle={{ width: "45%", backgroundColor: "green" }}
+         <GenericButton
+          buttonName={"DELETE"}
+          textStyle={{color: 'red'}}
+          icon={DELETE}
+          iconStyle={{tintColor: 'red', marginRight: 10}}
+          buttonStyle={{ width: "45%", backgroundColor: "white" , borderWidth: 0.5, borderColor: 'red'}}
           onPressAction={() => {
-            props.navigation.navigate("TransactionAmount");
+            onPressDelete(
+              {
+                accountTransctionId:
+                  transactionEntryDetails?.AccountTransctionId,
+                oldAccountBalance_: customerDetails?.AccountBalance,
+                transactionAmt: transactionEntryDetails?.TransctionAmount,
+                customerAccountId: customerDetails?.CustomerAccountId,
+              },
+              () => {
+                showToast({mainText: "Transaction Deleted Successfully...!"});
+                props.navigation.goBack();
+              }
+            );
           }}
         />
-      </View> */}
+      </View>
     </View>
   );
 };
@@ -180,7 +319,7 @@ const styles = StyleSheet.create({
   whiteBox: {
     backgroundColor: "white",
     margin: 20,
-    padding: 5,
+    padding: 12,
     borderRadius: 5,
   },
   letterCircle: {
@@ -204,8 +343,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 8,
-    paddingVertical: 8,
-    borderBottomWidth: 0.5,
+    paddingVertical: 12,
+    borderBottomWidth: 0.2,
     borderColor: "grey",
   },
   titleText: {
@@ -218,4 +357,29 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "600",
   },
+  circleView: {
+    height: 40, 
+    width: 40,
+    marginLeft: 6,
+    borderRadius: 20,
+    backgroundColor: 'blue',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textLetter :{
+    fontSize: 18,
+    color: "white",
+    fontWeight: "600",
+  },
+  customerName: {
+    fontSize: 16,
+    color: "black",
+    fontWeight: "500",
+  },
+  transDate: {
+    fontSize: 12,
+    color: "gray",
+    fontWeight: "400",
+    marginTop: 4
+  }
 });

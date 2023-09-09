@@ -8,10 +8,11 @@ export function getCurrentTime() {
 export function getOnlyNumbers(text = "") {
   return text?.replace(/\D/g, "");
 }
-export const showToast = ({mainText, subText="", type = "success"}) => {
+export const showToast = ({mainText, subText="", type = "success", bottomOffset = 120}) => {
   Toast.show({
     type: type,
     text1: mainText,
     text2: subText,
+    bottomOffset: bottomOffset
   });
 };
