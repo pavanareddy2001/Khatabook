@@ -13,8 +13,8 @@ const Login = props => {
   const isFocused = useIsFocused();
   const [userData, setUserData] = useState([]);
   const [loginData, setLoginData] = useState({
-    UserLoginId: '',
-    UserPassword: '',
+    UserLoginId: '1',
+    UserPassword: '1',
   });
   const getLoginData = async (
     onSuccess = data => {},

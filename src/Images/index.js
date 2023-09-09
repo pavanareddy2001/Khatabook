@@ -1,1 +1,8 @@
 export const CROSS = require('../Images/cross.png')
+export const BACKARROW = require('../Images/backArrow.png')
+export const RIGHTARROW = require('../Images/rightArrow.png')
+export const USER = require('../Images/user.png')
+export const CALL = require('../Images/call.png')
+export const BUSINESS = require('../Images/business.png')
+export const CATEGORY = require('../Images/category.png')
+export const LOCATION = require('../Images/location.png')

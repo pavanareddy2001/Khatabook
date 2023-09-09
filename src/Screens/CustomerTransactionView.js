@@ -128,7 +128,7 @@ const CustomerTransactionView = (props) => {
         </View>
         <View style={{flexDirection:"row",justifyContent:"space-between",margin:10}}>
           <Text style={{color:"white",fontSize:16,fontWeight:"500"}} >Trans Date</Text>
-          <Text style={{color:"white",fontSize:16,fontWeight:"500"}}>Trans Amount</Text>
+          <Text style={{color:"white",fontSize:16,fontWeight:"500",marginRight:25}}>Trans Amount</Text>
         </View>
       </View>
       <View style={{ flex: 1 }}>
@@ -144,7 +144,12 @@ const CustomerTransactionView = (props) => {
                 BillNo={item.BillNo}
                 ItemDetails={item.TransactionDescription}
                 onPressCard={() => {
-                  props.navigation.navigate("TransactionEntryDetails", item);
+                 
+                  props.navigation.navigate("TransactionEntryDetails", {
+                    ...item,
+                    ...props.route.params,
+                
+                  });
                 }}
                 TransctionType={item.TransctionType}
               />

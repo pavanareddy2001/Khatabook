@@ -1,6 +1,17 @@
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import CustomHeader from '../Components/CustomHeader';
+
+function ProfileCard({source,title,value,arrowSource}){
+ return(
+  <View>
+    <Image source={source}></Image>
+    <Text>{title}</Text>
+    <Text>{value}</Text>
+    <Image source={arrowSource}></Image>
+  </View>
+ ) 
+}
 
 const Profile = (props) => {
   const {navigation}=props
@@ -70,40 +81,6 @@ const Profile = (props) => {
           </TouchableOpacity>
 
 
-        <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>Bank Account</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
-
-
-        <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>Credit Score</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
-
-
-        <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>KYC Pending</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
-      </View>
-
-      <View>
-         <View style={styles.headerView}>
-            <Text>Staff info</Text>
-         </View>
-         <TouchableOpacity style={styles.inView}>
-          <View style={styles.flex}>
-            <Text style={styles.blackText}>Details</Text>
-            <Text style={styles.addDetailbutton}>ADD DETAILS</Text>
-            </View>
-          </TouchableOpacity>
       </View>
     </ScrollView>
     </View>

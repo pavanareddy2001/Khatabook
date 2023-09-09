@@ -13,14 +13,19 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
     <View style={{ flex: 1 }}>
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Navigator  
+      screenOptions={{ headerShown: false }}>
         <Tab.Screen
           options={{
             tabBarLabel: "Home",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: "bold",
+          },
             tabBarIcon: ({ color, size }) => (
               <Image
                 source={require("../Images/home.png")}
-                style={{ height: 20, width: 20, tintColor:color }}
+                style={{ height: 25, width: 25, tintColor:color }}
               />
             ),
           }}
@@ -30,10 +35,14 @@ function MyTabs() {
         <Tab.Screen
           options={{
             tabBarLabel: "Profile",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: "bold",
+          },
             tabBarIcon: ({ color, size }) => (
               <Image
                 source={require("../Images/profile.png")}
-                style={{ height: 20, width: 20, tintColor:color }}
+                style={{ height: 25, width: 25, tintColor:color }}
               />
             ),
           }}

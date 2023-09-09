@@ -1,5 +1,6 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import { BACKARROW } from '../Images';
 
 const CustomHeader = ({headerTitle, navigation, backArrowShow}) => {
   return (
@@ -12,7 +13,7 @@ const CustomHeader = ({headerTitle, navigation, backArrowShow}) => {
           }}>
           <Image
             style={styles.backArrowImg}
-            source={require('../Images/backArrow.png')}
+            source={BACKARROW}
           />
         </TouchableOpacity>
       ) : null}

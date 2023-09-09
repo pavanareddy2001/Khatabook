@@ -2,7 +2,7 @@ import moment from "moment";
 import Toast from "react-native-toast-message";
 
 export function getCurrentTime() {
-  return moment(new Date()).format("DD-MM-YYYY, hh:mm:ss A");
+  return moment(new Date()).format("DD-MM-YYYY, hh:mm A");
 }
 
 export function getOnlyNumbers(text = "") {
