@@ -20,7 +20,7 @@ var db = openDatabase({ name: "UserDatabase.db" });
 
 const Home = (props) => {
   const dispatch = useDispatch();
-  const [customerData, setCustomerData] = useState("");
+  const [customerData, setCustomerData] = useState([]);
   const [masterCusData, setMasterCusData] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedBussiness, setSelectedBussiness] = useState(null);
@@ -65,6 +65,21 @@ const Home = (props) => {
       dispatch({ type: "UPDATE_BUSINESSDATA", payload: JSON.parse(value) });
       getCustomerData(JSON.parse(value).BusinessId);
     }
+  }
+  function isGave(amount) {
+    return parseInt(amount) < 0;
+  }
+  function totalAmount(cusData) {
+    let giveAmount = 0;
+    let getAmount = 0;
+    cusData?.map((item) => {
+      if (isGave(item?.AccountBalance)) {
+        giveAmount = giveAmount + parseFloat(item?.AccountBalance || 0);
+      } else {
+        getAmount = getAmount + parseFloat(item?.AccountBalance || 0);
+      }
+    });
+    return { giveAmount: giveAmount * -1, getAmount };
   }
   useEffect(() => {
     getBusinessData();
@@ -126,17 +141,18 @@ const Home = (props) => {
         </View>
 
         <View style={styles.viewBox}>
-          <View style={styles.inboxView}>
-            <Text style={styles.greentext}> 70 </Text>
-            <Text>You will give</Text>
+          <View>
+            <Text style={styles.YouwillText}>You will give</Text>
+            <Text style={styles.redText}>
+              {totalAmount(customerData).giveAmount}
+            </Text>
           </View>
           <View style={styles.inboxView}>
-            <Text style={styles.redText}> 10 </Text>
-            <Text>You will get</Text>
+            <Text style={styles.YouwillText}>You will get</Text>
+            <Text style={styles.greentext}>
+              {totalAmount(customerData).getAmount}
+            </Text>
           </View>
-          {/* <TouchableOpacity>
-            <Text style={[styles.redText, { color: "blue" }]}>View Report</Text>
-          </TouchableOpacity> */}
         </View>
       </View>
       <View
@@ -173,21 +189,29 @@ const Home = (props) => {
                   </View>
                   <View>
                     <Text style={styles.bussinessNameText}>
-                      {" "}
                       {item?.CustomerName}
                     </Text>
-                    <Text> {item.login}</Text>
+                    <Text style={styles.timeStamp}>7 days ago</Text>
                   </View>
                 </View>
-                <View>
-                  <Text style={styles.greentext}> {item.amount}</Text>
-                </View>
+                <Text
+                  style={[
+                    styles.greentext,
+                    { color: isGave(item?.AccountBalance) ? "red" : "green" },
+                  ]}
+                >
+                  {" "}
+                  {isGave(item?.AccountBalance)
+                    ? parseInt(item?.AccountBalance) * -1
+                    : item?.AccountBalance || 0}{" "}
+                  Rs
+                </Text>
               </View>
             </TouchableOpacity>
           );
         }}
       />
-      {/* <View style={styles.addCustomerView}> */}
+
       <TouchableOpacity
         style={styles.addCustomerButton}
         onPress={() => {
@@ -207,7 +231,6 @@ const Home = (props) => {
         />
         <Text style={styles.addCustomerText}>ADD CUSTOMER</Text>
       </TouchableOpacity>
-      {/* </View> */}
     </View>
   );
 };
@@ -217,55 +240,54 @@ export default Home;
 const styles = StyleSheet.create({
   subView: {
     width: "100%",
-    height: Dimensions.get("screen").height * 0.2,
     backgroundColor: "blue",
   },
   text: {
     color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
     marginTop: 5,
     marginLeft: 8,
   },
   viewBox: {
-    borderWidth: 1,
     backgroundColor: "white",
-    padding: 15,
+    padding: 12,
     margin: 10,
     flexDirection: "row",
+    justifyContent: "space-between",
     borderRadius: 5,
   },
-  inboxView: {
-    marginRight: "15%",
+  YouwillText: {
+    color: "black",
+    fontSize: 14,
+    fontWeight: "400",
+    marginBottom: 4,
   },
   greentext: {
     color: "green",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "400",
   },
   redText: {
     color: "red",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "400",
   },
   subView2: {
     width: "100%",
     flexDirection: "row",
     borderWidth: 0.5,
     borderBottomColor: "grey",
-    // backgroundColor: 'red'
   },
   filterImage: {
     width: 40,
     height: 40,
     margin: 10,
-    // backgroundColor: 'red'
   },
   customerListView: {
     flexDirection: "row",
-    // marginTop:10,
-    // marginLeft:10,
-    borderWidth: 0.5,
+    justifyContent: "space-between",
+    borderBottomWidth: 0.5,
     borderBottomColor: "grey",
     padding: 10,
   },
@@ -273,35 +295,45 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
     borderRadius: 17.5,
-    borderWidth: 0.3,
+    marginRight: 12,
+    backgroundColor: "#CBE6F7",
+    justifyContent: "center",
+    alignItems: "center",
   },
   alphabetText: {
-    marginLeft: 12,
-    marginTop: 5,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "blue",
   },
   customerNameView: {
     flexDirection: "row",
-    marginRight: "50%",
   },
-  addCustomerView: {
-    flexDirection: "row-reverse",
-    marginTop: "70%",
+  bussinessNameText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "black",
+  },
+  timeStamp: {
+    fontSize: 12,
+    fontWeight: "300",
+    color: "grey",
   },
   addCustomerButton: {
     flexDirection: "row-reverse",
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
+    paddingVertical: 5,
     bottom: 20,
     right: 20,
-    borderWidth: 1,
     width: "50%",
     borderRadius: 25,
-    backgroundColor: "brown",
+    backgroundColor: "#CBE6F7",
   },
   addCustomerText: {
-    padding: 10,
-    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
+    color: "blue",
   },
   topBlankView: {
     position: "absolute",

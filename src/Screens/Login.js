@@ -1,10 +1,11 @@
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import GenericTextInput from '../Components/GenericTextInput';
 import GenericButton from '../Components/GenericButton';
 import CustomHeader from '../Components/CustomHeader';
 import { useIsFocused } from "@react-navigation/native";
 import {openDatabase} from 'react-native-sqlite-storage';
+import { showToast } from '../utils';
 var db = openDatabase({name: 'UserDatabase.db'});
 
 const Login = props => {
@@ -12,8 +13,8 @@ const Login = props => {
   const isFocused = useIsFocused();
   const [userData, setUserData] = useState([]);
   const [loginData, setLoginData] = useState({
-    UserLoginId: '',
-    UserPassword: '',
+    UserLoginId: '1',
+    UserPassword: '1',
   });
   const getLoginData = async (
     onSuccess = data => {},
@@ -84,12 +85,12 @@ const Login = props => {
               item => item.UserLoginId.toString() === loginData.UserLoginId.toString(),
             );
             if(isUserPresent===undefined){
-              Alert.alert("Error","User not registered")
+              showToast({mainText:"User not registered",type:"error"})
             }else{
               if(isUserPresent.UserPassword.toString()===loginData.UserPassword.toString()){
                 navigation.navigate("MyTabs")
               }else{
-                Alert.alert("Error","Wrong password")
+                showToast({mainText:"Wrong password",type:"error"})
               }
             }
             console.log('====================================');

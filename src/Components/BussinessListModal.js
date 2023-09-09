@@ -88,7 +88,7 @@ const BussinessListModal = (props) => {
          <View style={{flexDirection:'row', alignItems: 'center', justifyContent: 'space-between', margin: 16}}>
             <Text style={styles.heading}>Business List</Text>
             <TouchableOpacity onPress={onRequestClose}>
-              <Image style={{height: 40, width: 40, tintColor: 'black'}}  source={CROSS} />
+              <Image style={{height: 30, width: 30, tintColor: 'black'}}  source={CROSS} />
             </TouchableOpacity>
          </View>
           {bussinessNameData?.length === 0 && 

@@ -1,35 +1,54 @@
-import {Alert, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import GenericTextInput from '../Components/GenericTextInput';
-import GenericButton from '../Components/GenericButton';
-import CustomHeader from '../Components/CustomHeader';
-import {getCurrentTime} from '../utils';
-import {useSelector} from 'react-redux';
-import {openDatabase} from 'react-native-sqlite-storage';
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import GenericTextInput from "../Components/GenericTextInput";
+import GenericButton from "../Components/GenericButton";
+import CustomHeader from "../Components/CustomHeader";
+import { getCurrentTime, getOnlyNumbers } from "../utils";
+import { useSelector } from "react-redux";
+import { openDatabase } from "react-native-sqlite-storage";
+import { showToast } from "../utils";
 
-var db = openDatabase({name: 'UserDatabase.db'});
+var db = openDatabase({ name: "UserDatabase.db" });
 
-const TransactionAmount = props => {
-  const {navigation} = props;
+const TransactionAmount = (props) => {
+  const { navigation } = props;
+  const { isEdit, TransctionType, CustomerName } = props?.route?.params;
   const [accountDetails, setAccountDetails] = useState(null);
-
+  console.log("transactionEntryProps", props.route.params);
   const [transactionDetails, settransactionDetails] = useState({
     TransctionAmount: 0,
-    TransctionType: '',
-    TransactionDescription: '',
-    BillNo: '',
-    TransactionDatatime: '',
+    TransctionType: "",
+    TransactionDescription: "",
+    BillNo: "",
+    TransactionDatatime: "",
   });
-  const reduxData = useSelector(data => data);
+  const reduxData = useSelector((data) => data);
+  useEffect(() => {
+    if (isEdit) {
+      const {
+        TransctionAmount,
+        TransactionDescription,
+        BillNo,
+        TransctionType,
+      } = props?.route?.params;
+      settransactionDetails({
+        TransctionAmount: TransctionAmount,
+        TransctionType: TransctionType,
+        TransactionDescription: TransactionDescription,
+        BillNo: BillNo,
+        TransactionDatatime: "",
+      });
+    }
+  }, [props?.route?.params]);
   const getCustomerAccountData = async (
     CustomerAccountId_,
-    onSuccess = data => {},
-    onFailure = error => {},
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
   ) => {
     try {
-      await db.transaction(async tx => {
+      await db.transaction(async (tx) => {
         tx.executeSql(
-          'select * from Customer where CustomerAccountId = ?',
+          "select * from Customer where CustomerAccountId = ?",
           [CustomerAccountId_],
           (txn, results) => {
             var len = results?.rows?.length;
@@ -38,23 +57,23 @@ const TransactionAmount = props => {
               temp.push(results.rows.item(i));
             }
 
-            console.log('getCustomerAccountData', temp);
+            console.log("getCustomerAccountData", temp);
             onSuccess(temp);
           },
-          err => {
+          (err) => {
             onFailure(err);
-          },
+          }
         );
       });
     } catch (error) {
-      console.log('getCustomerData', error);
+      console.log("getCustomerData", error);
       onFailure(error);
     }
   };
 
   useEffect(() => {
     if (props.route.params.CustomerAccountId) {
-      getCustomerAccountData(props.route.params.CustomerAccountId, data => {
+      getCustomerAccountData(props.route.params.CustomerAccountId, (data) => {
         setAccountDetails(data[0]);
       });
     }
@@ -62,26 +81,26 @@ const TransactionAmount = props => {
 
   const updateAccountBalance = async (
     {
-      AccountBalance = '',
-      UpdatedBy = '',
-      CustomerAccountId = '',
-      UpdatedDateTime = '',
+      AccountBalance = "",
+      UpdatedBy = "",
+      CustomerAccountId = "",
+      UpdatedDateTime = "",
     },
 
-    onSuccess = data => {},
-    onFailure = error => {},
+    onSuccess = (data) => {},
+    onFailure = (error) => {}
   ) => {
     try {
-      console.log('====================================');
-      console.log('calling');
-      console.log('====================================');
-      await db.transaction(tx => {
+      console.log("====================================");
+      console.log("calling");
+      console.log("====================================");
+      await db.transaction((tx) => {
         tx.executeSql(
           `UPDATE Customer set AccountBalance=(?), UpdatedBy=(?), UpdatedDateTime=(?) where CustomerAccountId=?`,
           [AccountBalance, UpdatedBy, UpdatedDateTime, CustomerAccountId],
 
           (tx, results) => {
-            console.log('Results', results.rowsAffected);
+            console.log("Results", results.rowsAffected);
             if (results.rowsAffected > 0) {
               onSuccess(results);
             } else {
@@ -89,10 +108,10 @@ const TransactionAmount = props => {
             }
           },
 
-          err => {
-            console.log('updateCustomerAccountBalance Failed', err);
+          (err) => {
+            console.log("updateCustomerAccountBalance Failed", err);
             onFailure(err);
-          },
+          }
         );
       });
     } catch (error) {
@@ -101,13 +120,13 @@ const TransactionAmount = props => {
   };
   async function insertIntoAccountTransction(
     onSuccess = () => {},
-    onFailure = error => {},
+    onFailure = (error) => {}
   ) {
     try {
-      await db.transaction(async tx => {
+      await db.transaction(async (tx) => {
         await tx.executeSql(
-          'insert into AccountTransction ' +
-            '(CustomerAccountId,BusinessId,TransctionAmount,TransctionType,TransactionDescription,BillNo,TransactionDatatime) values(?,?,?,?,?,?,?)',
+          "insert into AccountTransction " +
+            "(CustomerAccountId,BusinessId,TransctionAmount,TransctionType,TransactionDescription,BillNo,TransactionDatatime) values(?,?,?,?,?,?,?)",
           [
             props.route.params.CustomerAccountId,
             reduxData.BusinessData.BusinessId,
@@ -118,12 +137,12 @@ const TransactionAmount = props => {
             getCurrentTime(),
           ],
           (tx, results) => {
-            console.log('insertIntoAccountTransction', results);
+            console.log("insertIntoAccountTransction", results);
             if (results?.rowsAffected === 1) {
               // update balance
               let oldAccountBalance = accountDetails.AccountBalance || 0;
               let newAccountBal = 0;
-              if (props.route.params.TransctionType === 'GAVE') {
+              if (props.route.params.TransctionType === "GAVE") {
                 newAccountBal =
                   parseFloat(oldAccountBalance) +
                   parseFloat(transactionDetails.TransctionAmount);
@@ -136,87 +155,199 @@ const TransactionAmount = props => {
                 {
                   AccountBalance: newAccountBal,
                   CustomerAccountId: props.route.params.CustomerAccountId,
-                  UpdatedBy: 'Admin',
+                  UpdatedBy: "Admin",
                   UpdatedDateTime: getCurrentTime(),
                 },
-                data => {
+                (data) => {
                   onSuccess();
-                },
+                }
               );
             } else {
               onFailure(results?.message);
             }
           },
-          error => {
-            console.log('insertIntoAccountTransction Failed', error);
+          (error) => {
+            console.log("insertIntoAccountTransction Failed", error);
             onFailure(results?.message);
-          },
+          }
         );
       });
     } catch (error) {
-      console.log('errorereoooo', error);
+      console.log("errorereoooo", error);
+      onFailure(error);
+    }
+  }
+
+  async function updateAccountTransction(
+    {
+      transactionAmount,
+      transactionDescription,
+      billNo,
+      accountTransctionId,
+      oldAccountBalance_,
+      oldTransactionAmount,
+      customerAccountId,
+    },
+    onSuccess = () => {},
+    onFailure = (error) => {}
+  ) {
+    try {
+      await db.transaction(async (tx) => {
+        await tx.executeSql(
+          `UPDATE AccountTransction set TransctionAmount=(?), TransactionDescription=(?), BillNo=(?), UpdatedBy=(?), UpdatedDateTime=(?) where AccountTransctionId=?`,
+          [
+            transactionAmount,
+            transactionDescription,
+            billNo,
+            "Admin",
+            getCurrentTime(),
+            accountTransctionId,
+          ],
+          (tx, results) => {
+            if (results?.rowsAffected === 1) {
+              // update balance
+              let oldAccountBalance = oldAccountBalance_ || 0;
+              let newAccountBal = 0;
+              if (props.route.params.TransctionType === "GAVE") {
+                newAccountBal =
+                  parseFloat(oldAccountBalance) -
+                  parseFloat(oldTransactionAmount) +
+                  parseFloat(transactionAmount);
+              } else {
+                newAccountBal =
+                  parseFloat(oldAccountBalance) +
+                  parseFloat(oldTransactionAmount) -
+                  parseFloat(transactionAmount);
+              }
+              updateAccountBalance(
+                {
+                  AccountBalance: newAccountBal,
+                  CustomerAccountId: customerAccountId,
+                  UpdatedBy: "Admin",
+                  UpdatedDateTime: getCurrentTime(),
+                },
+                (data) => {
+                  onSuccess();
+                }
+              );
+            } else {
+              onFailure(results?.message);
+            }
+          },
+          (error) => {
+            console.log("UpdateIntoAccountTransction Failed", error);
+            onFailure(results?.message);
+          }
+        );
+      });
+    } catch (error) {
+      console.log("errorereoooo", error);
       onFailure(error);
     }
   }
 
   return (
-    <View style={{alignItems: 'center', width: '100%'}}>
+    <View style={{ alignItems: "center", flex: 1 }}>
       <CustomHeader
         backArrowShow={true}
-        headerTitle={'Transaction Amount'}
+        headerTitle={
+          TransctionType === "GAVE"
+            ? `${
+                isEdit
+                  ? `Editing amount given to ${CustomerName}`
+                  : `Giving to ${CustomerName}`
+              }`
+            : `${
+                isEdit
+                  ? `Editing amount taken from ${CustomerName}`
+                  : `Taking from ${CustomerName}`
+              }`
+        }
         navigation={navigation}
       />
-      <GenericTextInput
-        placeholder={'Enter amount'}
-        value={transactionDetails.TransctionAmount}
-        onChangeText={value =>
-          settransactionDetails({
-            ...transactionDetails,
-            TransctionAmount: value,
-          })
-        }
-      />
-      <GenericTextInput
-        placeholder={'Enter details(Items,bill no,quantity,etc)'}
-        value={transactionDetails.TransactionDescription}
-        onChangeText={value =>
-          settransactionDetails({
-            ...transactionDetails,
-            TransactionDescription: value,
-          })
-        }
-      />
-      <GenericTextInput
-        placeholder={'Add Bill No.'}
-        value={transactionDetails.BillNo}
-        onChangeText={value =>
-          settransactionDetails({
-            ...transactionDetails,
-            BillNo: value,
-          })
-        }
-      />
-      {/* <GenericButton
-        buttonName={'Add Bill No.'}
-       
-      /> */}
+      <ScrollView
+        style={{ flex: 1, width: "100%" }}
+        contentContainerStyle={{ alignItems: "center" }}
+      >
+        <GenericTextInput
+          placeholder={"Enter amount"}
+          value={transactionDetails.TransctionAmount}
+          onChangeText={(value) =>
+            settransactionDetails({
+              ...transactionDetails,
+              TransctionAmount: getOnlyNumbers(value),
+            })
+          }
+        />
+        <GenericTextInput
+          placeholder={"Enter details(Items,bill no,quantity,etc)"}
+          value={transactionDetails.TransactionDescription}
+          onChangeText={(value) =>
+            settransactionDetails({
+              ...transactionDetails,
+              TransactionDescription: value,
+            })
+          }
+        />
+        <GenericTextInput
+          placeholder={"Add Bill No."}
+          value={transactionDetails.BillNo}
+          onChangeText={(value) =>
+            settransactionDetails({
+              ...transactionDetails,
+              BillNo: getOnlyNumbers(value),
+            })
+          }
+        />
+      </ScrollView>
+
       <GenericButton
-        buttonName={'SAVE'}
+        buttonName={isEdit ? "EDIT" : "SAVE"}
         onPressAction={() => {
-          if (transactionDetails.TransctionAmount != '') {
-            insertIntoAccountTransction(() => {
+          if (transactionDetails.TransctionAmount != "") {
+            if (isEdit) {
+              updateAccountTransction({
+                accountTransctionId: props?.route?.params?.AccountTransctionId,
+                billNo: transactionDetails.BillNo,
+                customerAccountId: props?.route?.params?.CustomerAccountId,
+                oldAccountBalance_: accountDetails.AccountBalance,
+                oldTransactionAmount: props?.route?.params?.TransctionAmount,
+                transactionAmount: transactionDetails.TransctionAmount,
+                transactionDescription:
+                  transactionDetails.TransactionDescription,
+              },()=>{
+                settransactionDetails({
+                  BillNo: "",
+                  TransactionDatatime: "",
+                  TransactionDescription: "",
+                  TransctionAmount: "",
+                  TransctionType: "",
+                });
+                showToast({
+                  mainText: "Transaction Amount Updated",
+                  type: "success",
+                });
+                navigation.goBack();
+              }
               
-              settransactionDetails({
-                BillNo: '',
-                TransactionDatatime: '',
-                TransactionDescription: '',
-                TransctionAmount: '',
-                TransctionType: '',
+              );
+            } else {
+              insertIntoAccountTransction(() => {
+                settransactionDetails({
+                  BillNo: "",
+                  TransactionDatatime: "",
+                  TransactionDescription: "",
+                  TransctionAmount: "",
+                  TransctionType: "",
+                });
+                showToast({
+                  mainText: "Transaction Amount added",
+                  type: "success",
+                });
+                navigation.goBack();
+                
               });
-              Alert.alert('Transaction Amount added');
-              navigation.goBack();
-              // getAccountTransctionData();
-            });
+            }
           }
         }}
       />

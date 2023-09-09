@@ -1,5 +1,6 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import { BACKARROW } from '../Images';
 
 const CustomHeader = ({headerTitle, navigation, backArrowShow}) => {
   return (
@@ -12,7 +13,7 @@ const CustomHeader = ({headerTitle, navigation, backArrowShow}) => {
           }}>
           <Image
             style={styles.backArrowImg}
-            source={require('../Images/backArrow.png')}
+            source={BACKARROW}
           />
         </TouchableOpacity>
       ) : null}
@@ -30,30 +31,23 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'blue',
     alignItems: 'center',
-    justifyContent: 'center'
-    // marginBottom:10
-    //position:'absolute'
-    
+    justifyContent: 'center',
+    borderBottomWidth:0.4,
+    borderColor:"white"
   },
   backBtn: {
     position:"absolute",
-    left: 16
+    left: 10
   },
   backArrowImg: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     tintColor: 'white',
-    // position:"absolute",
     left: 0
-    //  zIndex:4
   },
   headerTitleStyle: {
-    fontSize: 16,
+    fontSize: 18,
     color: 'white',
-    // padding: 10,
-    // position:"absolute",
-    //  textAlign:"center",
-    //  width:"100%",
-    //  zIndex:1
+    fontWeight:"700"
   },
 });

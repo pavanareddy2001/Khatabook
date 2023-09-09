@@ -20,12 +20,13 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: 'blue',
     margin: 10,
-    borderWidth: 1,
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
   },
   text: {
     color: 'white',
+    fontSize:14,
+    fontWeight:"600"
   },
 });

@@ -1,4 +1,4 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Splash from './src/Screens/Splash';
 import {NavigationContainer} from '@react-navigation/native';
@@ -311,7 +311,8 @@ const App = () => {
     );
   }
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1,backgroundColor:"blue"}}>
+       <StatusBar  backgroundColor={"blue"} barStyle="light-content" />
       <Provider store={store}>
         <StackNavigation />
         <Toast
