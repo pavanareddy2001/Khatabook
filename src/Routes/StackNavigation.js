@@ -9,12 +9,14 @@ import TransactionAmount from '../Screens/TransactionAmount';
 import TransactionEntryDetails from '../Screens/TransactionEntryDetails';
 import Login from '../Screens/Login';
 import SignUp from '../Screens/SignUp';
+import Splash from '../Screens/Splash';
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
   return (
     <NavigationContainer>
         <Stack.Navigator  screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Splash" component={Splash}/>
         <Stack.Screen name="Login" component={Login}/>
         <Stack.Screen name="SignUp" component={SignUp}/>
           <Stack.Screen name="MyTabs" component={MyTabs}/>

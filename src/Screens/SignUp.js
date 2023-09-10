@@ -1,10 +1,11 @@
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import GenericTextInput from "../Components/GenericTextInput";
 import GenericButton from "../Components/GenericButton";
 import CustomHeader from "../Components/CustomHeader";
 import { openDatabase } from "react-native-sqlite-storage";
 import { getOnlyNumbers, showToast } from "../utils";
+import { BOOK } from "../Images";
 var db = openDatabase({ name: "UserDatabase.db" });
 
 const SignUp = (props) => {
@@ -105,15 +106,18 @@ const SignUp = (props) => {
   }
   return (
     <View style={styles.mainView}>
-      <CustomHeader
+      {/* <CustomHeader
         backArrowShow={true}
         headerTitle={"Sign up"}
         navigation={navigation}
-      />
+      /> */}
       <ScrollView style={{flex:1,width:"100%"}}
       contentContainerStyle={{alignItems:"center"}}
       >
+        <Image style={{height: 100, width: 100, marginTop: 26}} source={BOOK} />
+        <Text style={styles.appName}>Create Account in Khatabook </Text>
       <GenericTextInput
+        title="Name"
         placeholder={"Enter your name"}
         value={signUpDetails.UserName}
         onChangeText={(value) => {
@@ -127,6 +131,7 @@ const SignUp = (props) => {
         <Text style={styles.errorMsg}>{signUpErrorMsg.UserName}</Text>
       )}
       <GenericTextInput
+        title="Mobile Number"
         placeholder={"Mobile Number"}
         value={signUpDetails.MobileNumber}
         onChangeText={(value) => {
@@ -140,6 +145,7 @@ const SignUp = (props) => {
         <Text style={styles.errorMsg}>{signUpErrorMsg.MobileNumber}</Text>
       )}
       <GenericTextInput
+        title="Login ID"
         placeholder={"Login ID"}
         value={signUpDetails.UserLoginId}
         onChangeText={(value) => {
@@ -153,6 +159,7 @@ const SignUp = (props) => {
         <Text style={styles.errorMsg}>{signUpErrorMsg.UserLoginId}</Text>
       )}
       <GenericTextInput
+        title="Password"
         placeholder={"Create a password"}
         value={signUpDetails.UserPassword}
         onChangeText={(value) => {
@@ -165,10 +172,10 @@ const SignUp = (props) => {
       {signUpErrorMsg.UserPassword && signUpDetails.UserPassword==="" && (
         <Text style={styles.errorMsg}>{signUpErrorMsg.UserPassword}</Text>
       )}
-      </ScrollView>
 
       <GenericButton
-        buttonName={"Sign Up"}
+        buttonName={"SIGN UP"}
+        buttonStyle={{marginTop: 30}}
         onPressAction={() => {
           if (!validSignUpFields()) {
             return;
@@ -216,6 +223,10 @@ const SignUp = (props) => {
           }
         }}
       />
+      <TouchableOpacity onPress={()=>props?.navigation?.goBack()}>
+        <Text style={styles.alreadyHaveAcc}>Already have Account... Login Now</Text>
+      </TouchableOpacity>
+       </ScrollView>
     </View>
   );
 };
@@ -233,4 +244,17 @@ const styles = StyleSheet.create({
     marginTop: -5,
     width:"80%"
   },
+  appName: {
+    fontSize: 18,
+    color: 'blue',
+    fontWeight: '700',
+    marginTop: 16,
+    marginBottom: 30,
+  },
+  alreadyHaveAcc: {
+    fontSize: 14,
+    color: 'coral',
+    fontWeight: '700',
+    marginTop: 16,
+  }
 });
