@@ -298,18 +298,6 @@ const App = () => {
     getUserData();
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  }, []);
-  if (loading) {
-    return (
-      <View>
-        <Splash />
-      </View>
-    );
-  }
   return (
     <SafeAreaView style={{flex: 1,backgroundColor:"blue"}}>
        <StatusBar  backgroundColor={"blue"} barStyle="light-content" />

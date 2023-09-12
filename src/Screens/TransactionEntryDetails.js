@@ -108,8 +108,8 @@ const TransactionEntryDetails = props => {
       RNFS.readFile(uri, 'base64').then((res) => {
         let urlString = 'data:image/jpeg;base64,' + res;
         let options = {
-          title: 'Share Title',
-          message: 'Share Message',
+          title: 'Sharing Transaction Details',
+          message: 'Sharing Transaction Details from Khathabook',
           url: urlString,
           type: 'image/jpeg',
         };
@@ -251,9 +251,7 @@ const TransactionEntryDetails = props => {
           <View style={styles.whiteBox}>
             <ViewShot
             ref={screenShotRef}
-            // ref={ref => {
-            //   screenShotRef.current = ref;
-            // }}
+            style={{backgroundColor: 'white'}}
             options={{format: 'jpg', quality: 0.9}}
             >
               <View>
