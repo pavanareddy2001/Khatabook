@@ -14,6 +14,7 @@ import {useIsFocused} from '@react-navigation/native';
 import {openDatabase} from 'react-native-sqlite-storage';
 import {showToast} from '../utils';
 import {BOOK} from '../Images';
+import { useDispatch } from 'react-redux';
 var db = openDatabase({name: 'UserDatabase.db'});
 
 const Login = props => {
@@ -24,6 +25,7 @@ const Login = props => {
     UserLoginId: '1',
     UserPassword: '1',
   });
+  const dispatch=useDispatch()
   const getLoginData = async (
     onSuccess = data => {},
     onFailure = error => {},
@@ -107,14 +109,12 @@ const Login = props => {
                   isUserPresent.UserPassword.toString() ===
                   loginData.UserPassword.toString()
                 ) {
+                  dispatch({type:"UPDATE_USER_DATA",payload:isUserPresent})
                   navigation.navigate('MyTabs');
                 } else {
                   showToast({mainText: 'Wrong password', type: 'error'});
                 }
               }
-              console.log('====================================');
-              console.log('isUserPresent', isUserPresent, userData);
-              console.log('====================================');
             } else {
               showToast({mainText: 'All Fields Requried...', type: 'error'});
             }

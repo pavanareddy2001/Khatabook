@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import CustomHeader from '../Components/CustomHeader';
 import {
   BUSINESS_CATEGORY,
@@ -17,8 +17,17 @@ import {
   USER,
 } from '../Images';
 import ProgressCircle from 'react-native-progress-circle';
+import {useSelector} from 'react-redux';
+import BussinessTypeModal from '../Components/BusinessTypeModal';
 
-function ProfileCard({source, title, value, arrowSource, showRoghtArrow}) {
+function ProfileCard({
+  source,
+  title,
+  value,
+  arrowSource,
+  showRoghtArrow,
+  onPressAdd,
+}) {
   return (
     <View style={styles.cardView}>
       <Image style={styles.iconCard} source={source}></Image>
@@ -33,7 +42,7 @@ function ProfileCard({source, title, value, arrowSource, showRoghtArrow}) {
           <Image style={styles.rightArrow} source={RIGHTARROW}></Image>
         ) : null
       ) : (
-        <TouchableOpacity style={styles.addDetails}>
+        <TouchableOpacity style={styles.addDetails} onPress={onPressAdd}>
           <Text style={styles.addDetailsTxt}>Add Details</Text>
         </TouchableOpacity>
       )}
@@ -42,6 +51,9 @@ function ProfileCard({source, title, value, arrowSource, showRoghtArrow}) {
 }
 
 const Profile = props => {
+  const userData = useSelector(data => data.userDataReducer.userData);
+  const businessData = useSelector(data => data.BusinessData);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const {navigation} = props;
   return (
     <View style={{flex: 1}}>
@@ -51,7 +63,7 @@ const Profile = props => {
         navigation={navigation}
       />
       <ScrollView style={{flex: 1}}>
-        <View style={{alignItems: 'center', backgroundColor: 'white',}}>
+        <View style={{alignItems: 'center', backgroundColor: 'white'}}>
           <View style={styles.headerView}>
             <Text style={styles.headerTxt}>Profile Strength</Text>
           </View>
@@ -65,7 +77,7 @@ const Profile = props => {
             bgColor="#fff">
             <Text style={{fontSize: 15}}>{'70%'}</Text>
           </ProgressCircle>
-          <View style={{ flexDirection: 'row', marginBottom: 12}}>
+          <View style={{flexDirection: 'row', marginBottom: 12}}>
             <Text style={styles.profileStrengthTxt}>Profile Strength : </Text>
             <Text style={styles.profileRating}>Good</Text>
           </View>
@@ -79,14 +91,14 @@ const Profile = props => {
             <ProfileCard
               source={USER}
               title={'Name'}
-              value={'Ajay'}
+              value={userData?.UserName}
               showRoghtArrow={true}
             />
             <ProfileCard
               source={CALL}
               title={'Registered number'}
-              value={'878347373434'}
-              showRoghtArrow={false}
+              value={userData?.MobileNumber}
+              showRoghtArrow={true}
             />
           </View>
         </View>
@@ -98,13 +110,16 @@ const Profile = props => {
           <ProfileCard
             source={BUSINESS_CATEGORY}
             title={'Business Category'}
-            value={'Manufacturing'}
+            value={businessData?.BusinessCategory}
             showRoghtArrow={true}
+            onPressAdd={() => {
+              setShowCategoryModal(true);
+            }}
           />
           <ProfileCard
             source={BUSINESS_TYPE}
             title={'Business Type'}
-            // value={'878347373434'}
+            value={businessData?.BusinessType}
             showRoghtArrow={false}
           />
           <ProfileCard
@@ -114,7 +129,11 @@ const Profile = props => {
             showRoghtArrow={false}
           />
         </View>
+<BussinessTypeModal
+visible={showCategoryModal}
+onRequestClose={()=>{setShowCategoryModal(false)}}
 
+/>
         <View>
           <View style={styles.headerView}>
             <Text style={styles.headerTxt}>Financial Information</Text>
@@ -123,7 +142,7 @@ const Profile = props => {
           <ProfileCard
             source={LOCATION_PROFILE}
             title={'GSTIN'}
-            // value={'878347373434'}
+            value={businessData?.UserGSTIN}
             showRoghtArrow={false}
           />
         </View>
@@ -218,11 +237,11 @@ const styles = StyleSheet.create({
   profileRating: {
     fontSize: 14,
     fontWeight: '600',
-    color: 'green'
+    color: 'green',
   },
   profileStrengthTxt: {
     fontSize: 14,
     fontWeight: '300',
-    color: 'black'
-  }
+    color: 'black',
+  },
 });
